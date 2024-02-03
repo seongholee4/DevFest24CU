@@ -38,19 +38,18 @@ app.post("/api/addUser", async (req, res) => {
     console.log("addUser req received");
 
     //Finds the note in body of req and adds it to the database
-    //const data = req?.body;
-    const data = {ssn: "1234567890", name: "Bob Jones", zipCode: "12345", phoneNumber: "1234567890", preferences:["environment", "politics"], ccMember:"Christopher Marte"};
+    const data = req?.body;
     const result = await db.collection("users").insertOne(data);
     res.send(result);
 })
 
-//Called when a user must be added
+//Called when a council member must be added
 app.post("/api/addMember", async (req, res) => {
     console.log("addMember req received");
 
     //Finds the note in body of req and adds it to the database
     //const data = req?.body;
-    const data = {ssn: "1234567890", name: "Bob Jones", zipCode: "12345", phoneNumber: "1234567890", preferences:["environment", "politics"], ccMember:"Christopher Marte"};
+    const data = {ssn: "1234567890", name: "Christopher Marte", zipCode: "12345", phoneNumber: "1234567890", preferences:["environment", "politics"]};
     const result = await db.collection("users").insertOne(data);
     res.send(result);
 })
