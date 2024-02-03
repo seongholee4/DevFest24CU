@@ -1,15 +1,17 @@
 import express from 'express'
 import 'dotenv/config'
 import mongoose from 'mongoose'
-const app = express()
-
-const uri = process.env.REACT_APP_MONGODB_KEY
-
 import cors from 'cors'
 import bodyParser from 'body-parser'// middleware making object 
+import { MongoClient, ObjectId } from 'mongodb';
+
+
+const app = express()
 app.use(cors()); // middleware 
 app.use(bodyParser.json());
-import { MongoClient, ObjectId } from 'mongodb';
+
+
+const uri = process.env.REACT_APP_MONGODB_KEY
 const client = new MongoClient(uri); // creating instance 
 const db = client.db("CivicHeart"); // referrencing db
 
@@ -25,13 +27,53 @@ async function main() {
     }
 }
 
-
 //Fetching of data from database
-app.get("/api", async (req, res) =>{
-    const data = await db.collection("users").find().toArray();
+app.get("/api/getMember", async (req, res) => {
+    const data = await db.collection("members").find().toArray();
     res.json(data);
 });
 
+
+app.post("/api/addMember", async (req, res) => {
+    console.log("addMember req received");
+
+    //Finds the note in body of req and adds it to the database
+    const data = req?.body;
+    const result = await db.collection("members").insertOne(data);
+    res.send(result);
+});
+
+app.post("/api/deleteMember", async (req, res) => {
+    console.log("deleteMember received");
+
+    //Finds the note in body of req and deletes it from the database
+    const deleteID = (req?.body).deleteMemberID;
+    const result = await db.collection("members").deleteOne({_id: new ObjectId(deleteID)});
+
+    //Error check if the deletion didn't work
+    if (result.deletedCount == 0) {
+        console.error(`ERROR: Member ${deleteID} was not deleted`);
+    }
+    res.send(result);
+});
+
+// update
+app.post("/api/updateMember", async (req, res) => {
+    console.log("updateMember received");
+    const data = req?.body;
+    const id = data._id;
+    delete data._id;
+    const result = await db.collection("members").updateOne({_id: new ObjectId(id)}, {$set: data});
+    res.send(result);
+});
+
+
+/* Users */
+
+app.get("/api/getUser", async (req, res) => {
+    const data = await db.collection("users").find().toArray();
+    res.json(data);
+});
 
 //Called when a user must be added
 app.post("/api/addUser", async (req, res) => {
@@ -77,4 +119,6 @@ app.post("/api/clearNotes", async (req, res) => {
     res.send(result);
 })
 
+
 main().catch(console.error);
+
