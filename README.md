@@ -1,6 +1,2 @@
-# DevFest2024
+# CivicPulse
 
-test - shah j
-EK
-222
-Kwabena
