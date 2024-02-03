@@ -75,6 +75,21 @@ app.get("/api/getUser", async (req, res) => {
     res.json(data);
 });
 
+
+//Fetch legislative members database
+app.get("/api/getMembers", async (req, res) => {
+    const data = await fetch(
+        `https://webapi.legistar.com/v1/nyc/Bodies`
+    );
+    const result = await data.json();
+
+
+    console.log("FETCHED!");
+    console.log(result);
+    res.json(data);
+})
+
+
 //Called when a user must be added
 app.post("/api/addUser", async (req, res) => {
     console.log("addUser req received");
@@ -91,8 +106,36 @@ app.post("/api/addMember", async (req, res) => {
 
     //Finds the note in body of req and adds it to the database
     //const data = req?.body;
-    const data = {ssn: "1234567890", name: "Christopher Marte", zipCode: "12345", phoneNumber: "1234567890", preferences:["environment", "politics"]};
-    const result = await db.collection("users").insertOne(data);
+    const data ={
+        districtNum:12,
+        name:"Kevin C. Riley",
+        borough: ["Bronx"],
+        party:"Democrat",
+        districts:[
+            "Co-op City", "Pelham Gardens", "Allerton", "Williamsbridge-Olinville", "Eastchester-Edenwald-Baychester", "Wakefield-Woodlawn", "Pelham Bay Park"
+        ],
+        email: "District12@council.nyc.gov"};
+    const result = await db.collection("members").insertOne(data);
+    res.send(result);
+})
+
+//Called when a council member must be replaced
+app.post("/api/replaceMember", async (req, res) => {
+    console.log("replaceMember req received");
+
+    //Finds the note in body of req and adds it to the database
+    //const data = req?.body;
+    const query={"districtNum": 8}
+    const data ={
+        districtNum:8,
+        name:"Diana Ayala",
+        borough: ["Manhattan", "Bronx"],
+        party:"Democrat",
+        districts:[
+            "Mott Haven-Port Morris", "Melrose", "Concourse-Concourse Village", "Upper East Side-Carnegie Hill", "Upper East Side-Yorkville", "East Harlem (South)", "East Harlem (North)", "Randall's Island"
+        ],
+        email: "District8@council.nyc.gov"};    
+    const result = await db.collection("members").replaceOne(query, data);
     res.send(result);
 })
 
