@@ -31,7 +31,7 @@ async function main() {
 
 /* Member */
 
-app.get("/api/addMember", async (req, res) => {
+app.post("/api/addMember", async (req, res) => {
     let data = req?.body;
 
     if (!data.hasOwnProperty("districtNum")) {
@@ -107,7 +107,7 @@ app.post("/api/updateMember", async (req, res) => {
 
 /* Users */
 
-app.get("/api/addUser", async (req, res) => {
+app.post("/api/addUser", async (req, res) => {
     let data = req?.body;
 
     if (!data.hasOwnProperty("ssn")) {
@@ -205,6 +205,88 @@ app.post("/api/updateUser", async (req, res) => {
 
 
 /* Laws */
+app.post("/api/addLaw", async (req, res) => {
+    let data = req?.body;
+
+    if (!data.hasOwnProperty("fileNum")) {
+        console.error("ERROR: No fileNum received");
+        res.send(null);
+    }
+    if (!data.hasOwnProperty("name")) {
+        data.name = null;
+    }
+    if (!data.hasOwnProperty("status")) {
+        data.status = null;
+    }
+    if (!data.hasOwnProperty("committee")) {
+        data.committee = null;
+    }
+    if (!data.hasOwnProperty("sponsor")) {
+        data.sponsor = null;
+    }
+    if (!data.hasOwnProperty("summary")) {
+        data.summary = null;
+    }
+    if (!data.hasOwnProperty("date")) {
+        data.date = null;
+    }
+    if (!data.hasOwnProperty("yesVoteNum")) {
+        data.lawVotes = null;
+    }
+    if (!data.hasOwnProperty("noVoteNum")) {
+        data.lawComments = null;
+    }
+    const result = await db.collection("laws").insertOne(data);
+    res.send(result);
+});
+
+app.get("/api/getLaw", async (req, res) => {
+    const fileNum = (req?.body).fileNum;
+    if (!fileNum) {
+        console.error("ERROR: No file number received");
+        res.send(null);
+    }
+    const result = await db.collection("laws").find({ fileNum: fileNum}).toArray();
+    if (result.length == 0) {
+        console.error(`ERROR: No law found with file number ${fileNum}`);
+        res.send(null);
+    } else {
+        res.json(result);
+    }
+});
+
+app.post("/api/deleteLaw", async (req, res) => {
+    console.log("deleteLaw received");
+
+    //Finds the note in body of req and deletes it from the database
+    const fileNum = (req?.body).fileNum;
+    if (!fileNum) {
+        console.error("ERROR: No file number received");
+        res.send(null);
+    }
+    const result = await db.collection("laws").deleteOne({fileNum: fileNum});
+
+    //Error check if the deletion didn't work
+    if (result.deletedCount == 0) {
+        console.error(`ERROR: Law ${fileNum} was not deleted`);
+    }
+    res.send(result);
+});
+
+app.post("/api/updateLaw", async (req, res) => {
+    console.log("updateLaw received");
+    const data = req?.body;
+    // check if the data is valid
+    if (!data) {
+        console.error("ERROR: No data received");
+        res.send(null);
+    } else if (!data.fileNum) {
+        console.error("ERROR: No file number received");
+        res.send(null);
+    }
+    const result = await db.collection("laws").updateOne({fileNum: data.fileNum}, {$set: data});
+    res.send(result);
+});
 
 
 /* Issues */
