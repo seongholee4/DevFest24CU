@@ -7,10 +7,6 @@ import { MongoClient, ObjectId } from 'mongodb';
 
 
 const app = express()
-import { MongoClient, ObjectId } from 'mongodb';
-
-
-const app = express()
 app.use(cors()); // middleware 
 app.use(bodyParser.json());
 
@@ -124,4 +120,3 @@ app.get("/api/getUser", async (req, res) => {
 
 
 main().catch(console.error);
-
