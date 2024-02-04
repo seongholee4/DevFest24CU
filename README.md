@@ -1,6 +1,9 @@
 # DevFest2024
 
-test - shah j
-EK
-222
-Kwabena
+## How to Run
+### Front End
+
+### Back End
+1. Navigate the terminal into `/server`
+2. Run `npm install` to install all Node dependencies.
+3. Run `node server.js` to begin the connection to the MongoDB database.
