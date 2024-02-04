@@ -1,7 +1,6 @@
-# CivicPulse
+# CivicHeart
 
 
-## How to Run
 ### Front End
 
 ### Back End
