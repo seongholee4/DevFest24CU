@@ -55,7 +55,7 @@ const SignUp = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle ={styles.container}>
-        <Text style = {{color: 'white', fontSize: 25, fontWeight: 600 }}> Sign Up </Text>
+        <Text style = {{color: 'black', fontSize: 25, fontWeight: 600 }}> Sign Up </Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'black'
+    backgroundColor: 'white'
   },
   input: {
     width: '80%',
