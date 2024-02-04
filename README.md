@@ -24,4 +24,4 @@ REACT_APP_MONGODB_KEY = mongodb+srv://devfest24:devfest24@devfest24.nkeqmxs.mong
 - Express
 
 ### App Design
-<img src="https://cdn.discordapp.com/attachments/1200628145502568458/1203588385852358716/Untitled_Notebook_3-1.jpg" width="200" alt="UserFlowSketch">
+<img src="https://cdn.discordapp.com/attachments/1200628145502568458/1203588385852358716/Untitled_Notebook_3-1.jpg" width="400" alt="UserFlowSketch">
