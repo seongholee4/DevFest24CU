@@ -31,6 +31,20 @@ async function main() {
 
 /* Member */
 
+//Will add a council city member to the member database
+//Body of request should be:
+/*
+{
+    districtNum: <district number>,
+    name: <councilman name>,
+    borough: <array of boroughs the person represents>,
+    party: <political party>,
+    districts: <array of neighborhoods represented>,
+    email: <email of councilman>,
+    zipCodes: <array of zipcodes councilman represents>,
+    imageURL: <url of face>
+}
+*/
 app.post("/api/addMember", async (req, res) => {
     let data = req?.body;
 
@@ -64,6 +78,9 @@ app.post("/api/addMember", async (req, res) => {
     res.send(result);
 });
 
+
+//Returns object of councilman
+//Body of request should be: {zipCode: <zipCode value>}
 app.get("/api/getMember", async (req, res) => {
     let zipCode = (req?.body).zipCode;
     zipCode = parseInt(zipCode);
@@ -77,6 +94,9 @@ app.get("/api/getMember", async (req, res) => {
     }
 });
 
+
+//Deletes councilmember from database
+//Body of request should be: {districtNumber: <districtNumber of councilmember>}
 app.post("/api/deleteMember", async (req, res) => {
     console.log("deleteMember received");
 
@@ -91,6 +111,8 @@ app.post("/api/deleteMember", async (req, res) => {
     res.send(result);
 });
 
+//Updates member information
+//Use same body as /api/addMember
 app.post("/api/updateMember", async (req, res) => {
     console.log("updateMember received");
     const data = req?.body;
@@ -111,6 +133,21 @@ app.post("/api/updateMember", async (req, res) => {
 
 /* Users */
 
+//Adds user
+//Body of request should be:
+/*
+{
+    ssn: <10 digit number (will be SHA-1'd here)>,
+    userName: <username>,
+    name: <array of boroughs the person represents>,
+    party: <full name>,
+    zipCode: <5 digit #>,
+    phoneNumber: <10 digit number no hyphens>,
+    preferences: <array of issues user likes>,
+    ccMember: <councilmember who represents user>,
+    password: <raw password of user (will be SHA-1'd here)>
+}
+*/
 app.post("/api/addUser", async (req, res) => {
     let data = req?.body;
 
@@ -153,6 +190,13 @@ app.post("/api/addUser", async (req, res) => {
 });
 
 
+//Returns user
+//Body of request should be:
+/*
+{
+    userName: <username>
+}
+*/
 app.get("/api/getUser", async (req, res) => {
     console.log("getUser received");
     let inputUserName = (req?.body).userName;
@@ -166,6 +210,13 @@ app.get("/api/getUser", async (req, res) => {
 });
 
 
+//Deletes user
+//Body of request should be:
+/*
+{
+    userName: <username>
+}
+*/
 app.post("/api/deleteUser", async (req, res) => {
     console.log("deleteUser received");
 
@@ -181,6 +232,21 @@ app.post("/api/deleteUser", async (req, res) => {
 });
 
 
+//Updates user
+//Body of request should be:
+/*
+{
+    ssn: <10 digit number (will be SHA-1'd here)>,
+    userName: <username>,
+    name: <array of boroughs the person represents>,
+    party: <full name>,
+    zipCode: <5 digit #>,
+    phoneNumber: <10 digit number no hyphens>,
+    preferences: <array of issues user likes>,
+    ccMember: <councilmember who represents user>,
+    password: <raw password of user (will be SHA-1'd here)>
+}
+*/
 app.post("/api/updateUser", async (req, res) => {
     console.log("updateUser received");
     const data = req?.body;
@@ -213,6 +279,20 @@ app.post("/api/updateUser", async (req, res) => {
 
 
 /* Laws */
+//Body of request should be:
+/*
+{
+    fileNum: <fileNum code of the law as seen on https://legistar.council.nyc.gov/Legislation.aspx>,
+    name: <name of law>,
+    status: <law status as seen on https://legistar.council.nyc.gov/Legislation.aspx>,
+    committee: <committee law is assigned to as seen on https://legistar.council.nyc.gov/Legislation.aspx>,
+    sponsor: <array of councilmen who sponsor the law>,
+    summary: <summary of law>,
+    data: <date law is brought to NYCC>,
+    ccMember: <councilmember who represents user>,
+    password: <raw password of user (will be SHA-1'd here)>
+}
+*/
 app.post("/api/addLaw", async (req, res) => {
     let data = req?.body;
 
@@ -239,12 +319,6 @@ app.post("/api/addLaw", async (req, res) => {
     if (!data.hasOwnProperty("date")) {
         data.date = null;
     }
-    if (!data.hasOwnProperty("yesVoteNum")) {
-        data.lawVotes = null;
-    }
-    if (!data.hasOwnProperty("noVoteNum")) {
-        data.lawComments = null;
-    }
     const result = await db.collection("laws").insertOne(data);
     res.send(result);
 });
@@ -266,6 +340,13 @@ app.get("/api/getLaw", async (req, res) => {
     }
 });
 
+
+//Body of request should be:
+/*
+{
+    fileNum: <fileNum code of the law as seen on https://legistar.council.nyc.gov/Legislation.aspx>
+}
+*/
 app.post("/api/deleteLaw", async (req, res) => {
     console.log("deleteLaw received");
 
@@ -285,6 +366,21 @@ app.post("/api/deleteLaw", async (req, res) => {
     res.send(result);
 });
 
+
+//Body of request should be:
+/*
+{
+    fileNum: <fileNum code of the law as seen on https://legistar.council.nyc.gov/Legislation.aspx>,
+    name: <name of law>,
+    status: <law status as seen on https://legistar.council.nyc.gov/Legislation.aspx>,
+    committee: <committee law is assigned to as seen on https://legistar.council.nyc.gov/Legislation.aspx>,
+    sponsor: <array of councilmen who sponsor the law>,
+    summary: <summary of law>,
+    data: <date law is brought to NYCC>,
+    ccMember: <councilmember who represents user>,
+    password: <raw password of user (will be SHA-1'd here)>
+}
+*/
 app.post("/api/updateLaw", async (req, res) => {
     console.log("updateLaw received");
     const data = req?.body;
