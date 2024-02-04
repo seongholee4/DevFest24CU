@@ -37,27 +37,35 @@ app.post("/api/addMember", async (req, res) => {
     if (!data.hasOwnProperty("districtNum")) {
         console.error("ERROR: No district number received");
         res.send(null);
+        return;
     }
     if (!data.hasOwnProperty("name")) {
         data.name = null;
+        return;
     }
     if (!data.hasOwnProperty("borough")) {
         data.borough = null;
+        return;
     }
     if (!data.hasOwnProperty("party")) {
         data.party = null;
+        return;
     }
     if (!data.hasOwnProperty("districts")) {
         data.districts = null;
+        return;
     }
     if (!data.hasOwnProperty("email")) {
         data.email = null;
+        return;
     }
     if (!data.hasOwnProperty("zipCodes")) {
         data.zipCodes = null;
+        return;
     }
     if (!data.hasOwnProperty("imageURL")) {
         data.imageURL = null;
+        return;
     }
     const result = await db.collection("members").insertOne(data);
     res.send(result);
@@ -70,6 +78,7 @@ app.get("/api/getMember", async (req, res) => {
     if (result.length == 0) {
         console.error(`ERROR: No council members found for zip code ${zipCode}`);
         res.send(null);
+        return;
     } else {
         res.json(result[0]);
     }
@@ -96,9 +105,11 @@ app.post("/api/updateMember", async (req, res) => {
     if (!data) {
         console.error("ERROR: No data received");
         res.send(null);
+        return;
     } else if (!data.districtNum) {
         console.error("ERROR: No district number received");
         res.send(null);
+        return;
     }
     const result = await db.collection("members").updateOne({districtNum: data.districtNum}, {$set: data});
     res.send(result);
@@ -113,9 +124,11 @@ app.post("/api/addUser", async (req, res) => {
     if (!data.hasOwnProperty("ssn")) {
         console.error("ERROR: No SSN received");
         res.send(null);
+        return;
     } else if (!data.hasOwnProperty("userName")) {
         console.error("ERROR: No username received");
         res.send(null);
+        return;
     }
     if (!data.hasOwnProperty("name")) {
         data.name = null;
@@ -188,9 +201,11 @@ app.post("/api/updateUser", async (req, res) => {
     if (!data) {
         console.error("ERROR: No data received");
         res.send(null);
+        return;
     } else if ((!data.ssn) && (!data.userName)) {
         console.error("ERROR: No user received");
         res.send(null);
+        return;
     }
 
     //Updates based on which of the two unique keys is present
@@ -211,6 +226,7 @@ app.post("/api/addLaw", async (req, res) => {
     if (!data.hasOwnProperty("fileNum")) {
         console.error("ERROR: No fileNum received");
         res.send(null);
+        return;
     }
     if (!data.hasOwnProperty("name")) {
         data.name = null;
@@ -245,11 +261,13 @@ app.get("/api/getLaw", async (req, res) => {
     if (!fileNum) {
         console.error("ERROR: No file number received");
         res.send(null);
+        return;
     }
     const result = await db.collection("laws").find({ fileNum: fileNum}).toArray();
     if (result.length == 0) {
         console.error(`ERROR: No law found with file number ${fileNum}`);
         res.send(null);
+        return;
     } else {
         res.json(result);
     }
@@ -263,6 +281,7 @@ app.post("/api/deleteLaw", async (req, res) => {
     if (!fileNum) {
         console.error("ERROR: No file number received");
         res.send(null);
+        return;
     }
     const result = await db.collection("laws").deleteOne({fileNum: fileNum});
 
@@ -280,16 +299,117 @@ app.post("/api/updateLaw", async (req, res) => {
     if (!data) {
         console.error("ERROR: No data received");
         res.send(null);
+        return;
     } else if (!data.fileNum) {
         console.error("ERROR: No file number received");
         res.send(null);
+        return;
     }
     const result = await db.collection("laws").updateOne({fileNum: data.fileNum}, {$set: data});
     res.send(result);
 });
 
 
+
+/* Votes */
+
+//Adds vote to the total vote database
+app.post("/api/addVote", async(req, res) => {
+    console.log("addVote req received!");
+    //Assume that the front end will pass in the body of the POST request as follows:
+    /*
+    { userName: person's username,
+      fileNum: the code of the legislation being passed
+      vote: either a "Y" string or "N" string to indicate yes or no vote
+    }
+    */
+
+    const data = req?.body;
+
+    //Error checks
+    if (!data.hasOwnProperty("fileNum")) {
+        console.error("ERROR: No fileNum received");
+        res.send(null);
+        return;
+    }
+    if (!data.hasOwnProperty("userName")) {
+        console.error("ERROR: No username received");
+        res.send(null);
+        return;
+    }
+    if (!data.hasOwnProperty("vote")) {
+        console.error("ERROR: No vote received");
+        res.send(null);
+        return;
+    } else if (data.vote != "Y" && data.vote != "N") {
+        console.error("ERROR: Vote is not 'Y' or 'N'!");
+        res.send(null);
+        return;
+    }
+
+    //updateOne will replace existing vote with new vote
+    //if no existing vote, will just insert one with insertOne method
+    console.log(data);
+    console.log("\n")
+
+    let result = await db.collection("votes").updateOne({userName: data.userName, fileNum: data.fileNum}, {$set: data});
+
+    if (result.modifiedCount == 0) {
+        result = await db.collection("votes").insertOne(data); 
+    }
+
+    res.send(result);
+
+});
+
+
+// Returns total yes/no tally of votes for inputted issue
+app.get("/api/getVotes", async(req, res) => {
+    //Assumes front end requested fileNum in body:
+    /*
+    {
+        fileNum: fileNum code as seen in laws database
+    }
+    */
+    const data = req?.body;
+
+    //Error checks
+    if (!data.hasOwnProperty("fileNum")) {
+        console.error("ERROR: No fileNum received");
+        res.send(null);
+        return;
+    }
+
+    const inputFileNum = data.fileNum;
+
+    const yesVotes = await db.collection("votes").countDocuments({fileNum: inputFileNum, vote: "Y"});
+    const noVotes = await db.collection("votes").countDocuments({fileNum: inputFileNum, vote: "N"});
+
+    const result = {
+        yesCount: yesVotes,
+        noCount: noVotes
+    }
+
+    res.send(result);
+
+});
+
+
+
+
 /* Issues */
+//Will return all 10 pregenerated issues back to front end
+app.get("/api/getIssues", async(req, res) => {
+
+    //NOTE: This is a dummy method! It will just return all issues in the database
+    
+    console.log("getIssues recieved!");
+
+    const result = await db.collection("issues").find({}).toArray();
+
+    res.json(result);
+
+});
 
 
 main().catch(console.error);
