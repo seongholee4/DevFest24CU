@@ -5,6 +5,8 @@ import cors from 'cors'
 import bodyParser from 'body-parser'// middleware making object 
 import { MongoClient, ObjectId } from 'mongodb';
 
+const crypto = require( 'crypto' );
+
 
 const app = express()
 app.use(cors()); // middleware 
@@ -35,19 +37,26 @@ app.get("/api/addMember", async (req, res) => {
     if (!data.hasOwnProperty("districtNum")) {
         console.error("ERROR: No district number received");
         res.send(null);
-    } else if (!data.hasOwnProperty("name")) {
+    }
+    if (!data.hasOwnProperty("name")) {
         data.name = null;
-    } else if (!data.hasOwnProperty("borough")) {
+    }
+    if (!data.hasOwnProperty("borough")) {
         data.borough = null;
-    } else if (!data.hasOwnProperty("party")) {
+    }
+    if (!data.hasOwnProperty("party")) {
         data.party = null;
-    } else if (!data.hasOwnProperty("districts")) {
+    }
+    if (!data.hasOwnProperty("districts")) {
         data.districts = null;
-    } else if (!data.hasOwnProperty("email")) {
+    }
+    if (!data.hasOwnProperty("email")) {
         data.email = null;
-    } else if (!data.hasOwnProperty("zipCodes")) {
+    }
+    if (!data.hasOwnProperty("zipCodes")) {
         data.zipCodes = null;
-    } else if (!data.hasOwnProperty("imageURL")) {
+    }
+    if (!data.hasOwnProperty("imageURL")) {
         data.imageURL = null;
     }
     const result = await db.collection("members").insertOne(data);
@@ -98,19 +107,101 @@ app.post("/api/updateMember", async (req, res) => {
 
 /* Users */
 
-app.post("/api/addUser", async (req, res) => {
-    console.log("addUser req received");
+app.get("/api/addUser", async (req, res) => {
+    let data = req?.body;
 
-    //Finds the note in body of req and adds it to the database
-    const data = req?.body;
+    if (!data.hasOwnProperty("ssn")) {
+        console.error("ERROR: No SSN received");
+        res.send(null);
+    } else if (!data.hasOwnProperty("userName")) {
+        console.error("ERROR: No username received");
+        res.send(null);
+    }
+    if (!data.hasOwnProperty("name")) {
+        data.name = null;
+    }
+    if (!data.hasOwnProperty("zipCode")) {
+        data.zipCode = null;
+    }
+    if (!data.hasOwnProperty("phoneNumber")) {
+        data.phoneNumber = null;
+    }
+    if (!data.hasOwnProperty("preferences")) {
+        data.preferences = null;
+    }
+    if (!data.hasOwnProperty("ccMember")) {
+        data.ccMember = null;
+    }
+    if (!data.hasOwnProperty("password")) {
+        data.password = null;
+    
+    //Will SHA-1 hash the password if passed in
+    } else if (data.hasOwnProperty("password")) {
+        data.password = crypto.createHash('sha1').update(data.password).digest('hex');
+    }
+    //SHA-1's the SSN
+    data.ssn = crypto.createHash('sha1').update(data.ssn).digest('hex');
+
     const result = await db.collection("users").insertOne(data);
     res.send(result);
 });
 
+
 app.get("/api/getUser", async (req, res) => {
-    const data = await db.collection("users").find().toArray();
-    res.json(data);
+    console.log("getUser received");
+    let inputUserName = (req?.body).userName;
+    const result = await db.collection("users").find({ userName: inputUserName}).toArray();
+    assert(result.length <= 1);
+    if (result.length == 0) {
+        console.error("ERROR: No user found");
+    }else {
+        res.json(result);
+    }
 });
+
+
+app.post("/api/deleteUser", async (req, res) => {
+    console.log("deleteUser received");
+
+    //Finds the note in body of req and deletes it from the database
+    const inputUserName = (req?.body).userName;
+    const result = await db.collection("users").deleteOne({userName: inputUserName});
+
+    //Error check if the deletion didn't work
+    if (result.deletedCount == 0) {
+        console.error(`ERROR: User was not deleted`);
+    }
+    res.send(result);
+});
+
+
+app.post("/api/updateUser", async (req, res) => {
+    console.log("updateUser received");
+    const data = req?.body;
+
+    //Makes sure to encrypt SSN
+    if (data.ssn) {
+        data.ssn = crypto.createHash('sha1').update(data.ssn).digest('hex');
+    }
+
+    // check if the data is valid
+    if (!data) {
+        console.error("ERROR: No data received");
+        res.send(null);
+    } else if ((!data.ssn) && (!data.userName)) {
+        console.error("ERROR: No user received");
+        res.send(null);
+    }
+
+    //Updates based on which of the two unique keys is present
+    if (!data.ssn) {
+        const result = await db.collection("users").updateOne({userName: data.userName}, {$set: data});
+    } else {
+        const result = await db.collection("users").updateOne({ssn: data.ssn}, {$set: data});
+    }
+    res.send(result);
+});
+
 
 
 /* Laws */
