@@ -10,7 +10,11 @@
 
 ## Tools
 - Figma
-- React Native
-- Expo Go
+- React Native & CSS
 - Javascript
 - MongoDB
+
+### Frameworks
+- Expo Go
+- Express
+
