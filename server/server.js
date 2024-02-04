@@ -27,24 +27,19 @@ async function main() {
 
 
 //Fetching of data from database
-app.get("/api", async (req, res) =>{
+app.get("/api/getUsers", async (req, res) =>{
     const data = await db.collection("users").find().toArray();
     res.json(data);
 });
 
 
-//Fetch legislative members database
-app.get("/api/getMembers", async (req, res) => {
-    const data = await fetch(
-        `https://webapi.legistar.com/v1/nyc/Bodies`
-    );
-    const result = await data.json();
-
-
-    console.log("FETCHED!");
-    console.log(result);
+//Fetching of data from database
+app.get("/api/getMembers", async (req, res) =>{
+    const data = await db.collection("members").find().toArray();
     res.json(data);
-})
+});
+
+
 
 
 //Called when a user must be added
@@ -62,17 +57,41 @@ app.post("/api/addMember", async (req, res) => {
     console.log("addMember req received");
 
     //Finds the note in body of req and adds it to the database
-    //const data = req?.body;
-    const data ={
-        districtNum:12,
-        name:"Kevin C. Riley",
-        borough: ["Bronx"],
+    /*const data ={
+        districtNum:5,
+        name:"Julie Menin",
+        borough: ["Manhattan"],
         party:"Democrat",
         districts:[
-            "Co-op City", "Pelham Gardens", "Allerton", "Williamsbridge-Olinville", "Eastchester-Edenwald-Baychester", "Wakefield-Woodlawn", "Pelham Bay Park"
+            "East Midtown-Turtle Bay", "United Nations", "Upper East Side-Lenox Hill-Roosevelt Island", "Upper East Side-Carnegie Hill", "Upper East Side-Yorkville"
         ],
-        email: "District12@council.nyc.gov"};
+        email: "District5@council.nyc.gov",
+        zipCodes: [10017, 10022, 10021, 10028]};*/
+    const data = req?.body;
     const result = await db.collection("members").insertOne(data);
+    res.send(result);
+})
+
+
+//Called when a user must be added
+app.post("/api/addLaw", async (req, res) => {
+    console.log("addLaw req received");
+
+    //Finds the note in body of req and adds it to the database
+    const data = req?.body;
+    /*
+    const data = {
+        fileNum: "T2024-0072",
+        name: "Safety standards for powered bicycles and powered mobility devices used for food delivery services.",
+        status: "Committee",
+        committee: "Committee on Consumer and Worker Protection",
+        sponsor: ["Oswald Feliz", "Keith Powers", "Shaun Abreu", "Rita C. Joseph", "Gale A. Brewer"],
+        summary: "This bill would establish safety standards for powered bicycles and powered mobility devices when used for food delivery services. Specifically, the bill requires that any powered mobility device operated by a food delivery worker on behalf of a third-party delivery service or third-party courier service, meet local standards established for the sale of such device, which includes certification by an accredited testing laboratory. Third-party delivery services or third-party courier services would be responsible for providing food delivery workers with such devices at no expense to the worker. Finally, responsibility for compliance with these provisions would fall on the third-party delivery service or third-party courier service, which would be subject to civil penalties for any violations.",
+        date: "2024-02-08"
+    }
+    */
+
+    const result = await db.collection("laws").insertOne(data);
     res.send(result);
 })
 
