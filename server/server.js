@@ -41,31 +41,24 @@ app.post("/api/addMember", async (req, res) => {
     }
     if (!data.hasOwnProperty("name")) {
         data.name = null;
-        return;
     }
     if (!data.hasOwnProperty("borough")) {
         data.borough = null;
-        return;
     }
     if (!data.hasOwnProperty("party")) {
         data.party = null;
-        return;
     }
     if (!data.hasOwnProperty("districts")) {
         data.districts = null;
-        return;
     }
     if (!data.hasOwnProperty("email")) {
         data.email = null;
-        return;
     }
     if (!data.hasOwnProperty("zipCodes")) {
         data.zipCodes = null;
-        return;
     }
     if (!data.hasOwnProperty("imageURL")) {
         data.imageURL = null;
-        return;
     }
     const result = await db.collection("members").insertOne(data);
     res.send(result);
