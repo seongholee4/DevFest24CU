@@ -23,9 +23,13 @@ REACT_APP_MONGODB_KEY = mongodb+srv://devfest24:devfest24@devfest24.nkeqmxs.mong
 - Express
 
 ### App Design
-- <img src="https://cdn.discordapp.com/attachments/1200628145502568458/1203588385852358716/Untitled_Notebook_3-1.jpg" width="400" alt="UserFlowSketch">
+- Figma App Prototype:
+[Figma](https://www.figma.com/file/tpOECeHhvKrjsGEklITL25/DevFest-2024---CivicHeart?type=design&node-id=31%3A75&mode=design&t=emQWfnPzwtat6PdZ-1)
 <br>
-- ![Figma App Prototype](https://www.figma.com/file/tpOECeHhvKrjsGEklITL25/DevFest-2024---CivicHeart?type=design&node-id=31%3A75&mode=design&t=emQWfnPzwtat6PdZ-1)
+- Another App Prototype on Figma:
+[Figma](https://www.figma.com/file/hivwFvKjQSR0eCSeis8x9L/civic-heart?type=design&node-id=0%3A1&mode=design&t=24rrI6fXqWV6RUoh-1)
+<br>
+- <img src="https://cdn.discordapp.com/attachments/1200628145502568458/1203588385852358716/Untitled_Notebook_3-1.jpg" width="400" alt="UserFlowSketch">
 
 
 ## What's Next? What to Consider for Integration into Our App?
