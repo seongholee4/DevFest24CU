@@ -29,8 +29,10 @@ async function main() {
 
 //Fetching of data from database
 app.get("/api/getMember", async (req, res) => {
-    const data = await db.collection("members").find().toArray();
-    res.json(data);
+    const data = (req?.body);
+    console.log(data);
+    const result = await db.collection("members").find().toArray();
+    res.json(result);
 });
 
 
@@ -66,6 +68,26 @@ app.post("/api/updateMember", async (req, res) => {
     const result = await db.collection("members").updateOne({_id: new ObjectId(id)}, {$set: data});
     res.send(result);
 });
+
+//Called when a council member must be replaced
+app.post("/api/updateMember", async (req, res) => {
+    console.log("replaceMember req received");
+
+    //Finds the note in body of req and adds it to the database
+    //const data = req?.body;
+    const query={"districtNum": 8}
+    const data ={
+        districtNum:8,
+        name:"Diana Ayala",
+        borough: ["Manhattan", "Bronx"],
+        party:"Democrat",
+        districts:[
+            "Mott Haven-Port Morris", "Melrose", "Concourse-Concourse Village", "Upper East Side-Carnegie Hill", "Upper East Side-Yorkville", "East Harlem (South)", "East Harlem (North)", "Randall's Island"
+        ],
+        email: "District8@council.nyc.gov"};    
+    const result = await db.collection("members").replaceOne(query, data);
+    res.send(result);
+})
 
 
 /* Users */
@@ -119,25 +141,7 @@ app.post("/api/addMember", async (req, res) => {
     res.send(result);
 })
 
-//Called when a council member must be replaced
-app.post("/api/replaceMember", async (req, res) => {
-    console.log("replaceMember req received");
 
-    //Finds the note in body of req and adds it to the database
-    //const data = req?.body;
-    const query={"districtNum": 8}
-    const data ={
-        districtNum:8,
-        name:"Diana Ayala",
-        borough: ["Manhattan", "Bronx"],
-        party:"Democrat",
-        districts:[
-            "Mott Haven-Port Morris", "Melrose", "Concourse-Concourse Village", "Upper East Side-Carnegie Hill", "Upper East Side-Yorkville", "East Harlem (South)", "East Harlem (North)", "Randall's Island"
-        ],
-        email: "District8@council.nyc.gov"};    
-    const result = await db.collection("members").replaceOne(query, data);
-    res.send(result);
-})
 
 //Called when a note must be deleted
 app.post("/api/deleteNote", async (req, res) => {
@@ -154,13 +158,6 @@ app.post("/api/deleteNote", async (req, res) => {
     res.send(result);
 })
 
-app.post("/api/clearNotes", async (req, res) => {
-    console.log("clearNotes req received");
-    // Remove all items from the collection
-    // Didn't use drop because you then can't use Clear All button multiple times
-    const result = await db.collection("notes").deleteMany({});
-    res.send(result);
-})
 
 
 main().catch(console.error);
