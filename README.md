@@ -25,6 +25,10 @@ REACT_APP_MONGODB_KEY = mongodb+srv://devfest24:devfest24@devfest24.nkeqmxs.mong
 ### App Design
 <img src="https://cdn.discordapp.com/attachments/1200628145502568458/1203588385852358716/Untitled_Notebook_3-1.jpg" width="400" alt="UserFlowSketch">
 
+### App Design Prototype
+![Welcome Page](https://www.figma.com/file/tpOECeHhvKrjsGEklITL25/DevFest-2024---CivicHeart?type=design&node-id=31-75&mode=design&t=emQWfnPzwtat6PdZ-4 "Design Concept")
+
+
 ## What's Next? What to Consider for Integration into Our App?
 - Building the platform with a larger database.
 - Push Notification Settings based on user's preferences on Issues/Laws
