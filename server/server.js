@@ -5,7 +5,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'// middleware making object 
 import { MongoClient, ObjectId } from 'mongodb';
 
-const crypto = require( 'crypto' );
+import crypto from 'crypto';
 
 
 const app = express()
